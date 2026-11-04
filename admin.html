@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Pedidos · Loja WitherCraft</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; padding: 24px; background: #15101f; color: #f4effc; font: 15px/1.5 system-ui, sans-serif; }
+  h1 { margin: 0 0 4px; font-size: 1.4rem; }
+  p.sub { margin: 0 0 20px; color: #b3a6cf; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #3d2f5c; vertical-align: top; }
+  th { color: #b3a6cf; font-weight: 600; }
+  .st { font-weight: 700; }
+  .paid { color: #7dffa0; } .pending { color: #ffd166; } .expired, .divergent { color: #ff8a8a; }
+  button { font: inherit; background: #2d2247; color: inherit; border: 1px solid #5a4690; padding: 4px 10px; cursor: pointer; border-radius: 4px; }
+  button:hover { background: #3d2f5c; }
+  button:disabled { opacity: .6; cursor: wait; }
+  .discord { margin: 20px 0; padding: 16px; border: 1px solid #5a4690; border-radius: 8px; background: #211932; }
+  .discord h2 { margin: 0; font-size: 1.1rem; }
+  .discord p { margin: 8px 0; }
+  .ok { color: #7dffa0; }
+  code { background: #0008; padding: 2px 6px; border-radius: 3px; word-break: break-all; }
+  .err { color: #ff8a8a; font-size: .85rem; }
+  .wrap { overflow-x: auto; }
+</style>
+</head>
+<body>
+<h1>Pedidos</h1>
+<p class="sub" id="mode"></p>
+<section class="discord" aria-labelledby="discord-title">
+  <h2 id="discord-title">Avisos no Discord</h2>
+  <p id="discord-config">Carregando configuração…</p>
+  <button id="discord-test" type="button">Testar Discord</button>
+  <p id="discord-result" role="status" aria-live="polite"></p>
+</section>
+<div class="wrap">
+<table>
+  <thead><tr><th>Quando</th><th>Jogador</th><th>VIP</th><th>Valor</th><th>Status</th><th>Entrega</th><th>Discord</th><th></th></tr></thead>
+  <tbody id="rows"></tbody>
+</table>
+</div>
+<script>
+const brl = (n) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const when = (t) => (t ? new Date(t).toLocaleString("pt-BR") : "—");
+const mk = (tag, props = {}, ...k) => { const n = Object.assign(document.createElement(tag), props); n.append(...k); return n; };
+async function post(url) { await fetch(url, { method: "POST" }); load(); }
+document.getElementById("discord-test").onclick = async () => {
+  const button = document.getElementById("discord-test");
+  const result = document.getElementById("discord-result");
+  button.disabled = true;
+  button.textContent = "Enviando…";
+  result.className = "";
+  result.textContent = "Enviando mensagem de teste ao Discord…";
+  try {
+    const response = await fetch("/admin/api/discord/test", { method: "POST", headers: { "Content-Type": "application/json", "X-Wither-Admin": "1" }, body: "{}" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || (response.status === 401 ? "Entre novamente no painel para testar." : "Não foi possível enviar o teste."));
+    result.className = "ok";
+    result.textContent = data.message;
+  } catch (error) {
+    result.className = "err";
+    result.textContent = error.message || "Falha de conexão. Tente novamente.";
+  } finally {
+    button.disabled = false;
+    button.textContent = "Testar Discord";
+  }
+};
+async function load() {
+  const r = await fetch("/admin/api/orders");
+  const d = await r.json();
+  document.getElementById("discord-config").textContent = d.discordConfigured
+    ? "Webhook configurado. Compras com Pix confirmado enviam um aviso neste canal. O teste não gera compra nem entrega VIP."
+    : "Preencha DISCORD_WEBHOOK_URL no .env e reinicie a loja para ativar os avisos.";
+  document.getElementById("mode").textContent = d.mode === "ptero"
+    ? "Entrega automática pelo painel ligada. Pedidos pagos sem entrega são reenviados sozinhos."
+    : "Modo manual: copie o comando de cada pedido pago e rode no console do servidor.";
+  const rows = document.getElementById("rows");
+  rows.replaceChildren(...d.orders.map((o) => {
+    const tr = mk("tr");
+    const del = o.deliveredAt ? `entregue ${when(o.deliveredAt)}` : o.status === "paid" ? "pendente" : "—";
+    const acts = mk("td");
+    if (o.status === "paid") {
+      const copy = mk("button", { textContent: "Copiar comando" });
+      copy.onclick = () => navigator.clipboard.writeText(o.command).then(() => (copy.textContent = "Copiado"));
+      acts.append(copy, " ");
+      if (!o.deliveredAt) { const m = mk("button", { textContent: "Marcar entregue" }); m.onclick = () => post(`/admin/api/orders/${o.id}/delivered`); acts.append(m); }
+      else { const rs = mk("button", { textContent: "Reenviar" }); rs.onclick = () => post(`/admin/api/orders/${o.id}/resend`); acts.append(rs); }
+    }
+    tr.append(
+      mk("td", {}, when(o.createdAt)), mk("td", {}, o.nick), mk("td", {}, `${o.tier} · ${o.days ? o.days + "d" : "perm"}`), mk("td", {}, brl(o.amount)),
+      mk("td", {}, mk("span", { className: "st " + o.status, textContent: o.status })),
+      mk("td", {}, del, o.lastError ? mk("div", { className: "err", textContent: o.lastError }) : ""),
+      mk("td", {}, o.discordSentAt ? `enviado ${when(o.discordSentAt)}` : o.discordPending ? "aguardando envio" : "—", o.discordError ? mk("div", { className: "err", textContent: o.discordError }) : ""),
+      acts
+    );
+    return tr;
+  }));
+}
+load(); setInterval(load, 8000);
+</script>
+</body>
+</html>

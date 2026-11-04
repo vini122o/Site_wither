@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loja VIP · WitherCraft</title>
+<meta name="description" content="Compre seu VIP do WitherCraft com Pix e receba o kit direto no jogo.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="#">WitherCraft <span>Loja</span></a>
+  <nav aria-label="Seções">
+    <a href="#como">Como funciona</a>
+    <a href="#duvidas">Dúvidas</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Compre seu VIP e receba o kit direto no jogo.</h1>
+    <p class="lead">Você paga com Pix e o VIP é ativado sozinho na sua conta do servidor. Veja o que vem em cada kit antes de escolher.</p>
+  </section>
+
+  <section class="shop" id="loja" aria-label="Escolha seu VIP">
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <div class="shop-body">
+      <div class="chest" id="chest" aria-live="polite"></div>
+      <aside class="buy" id="buy"></aside>
+    </div>
+  </section>
+
+  <section class="steps" id="como">
+    <h2>Como funciona</h2>
+    <ol>
+      <li><b>Escolha o VIP</b><span>Confira o kit, selecione o tempo e digite seu nick do jogo.</span></li>
+      <li><b>Pague o Pix</b><span>Escaneie o QR Code ou use o código copia e cola.</span></li>
+      <li><b>Receba na hora</b><span>Quando o Pix é confirmado, o VIP é ativado. Entre no servidor e digite <code>!vip kit</code>.</span></li>
+    </ol>
+  </section>
+
+  <section class="faq" id="duvidas">
+    <h2>Dúvidas</h2>
+    <details><summary>Preciso estar online para receber?</summary><p>Não. O VIP fica ligado ao seu nick. Quando você entrar, é só usar <code>!vip kit</code> ou abrir o menu VIP.</p></details>
+    <details><summary>Como abro o menu VIP?</summary><p>Digite <code>!vipmenu</code> ou agache segurando a bússola.</p></details>
+    <details><summary>Posso renovar antes de acabar?</summary><p>Pode. Comprar o mesmo VIP de novo soma o tempo ao que você ainda tem.</p></details>
+    <details><summary>O que acontece quando o VIP termina?</summary><p>Você perde o acesso ao kit e ao menu VIP daquele plano. Nada do que você já pegou é removido.</p></details>
+    <details><summary>Errei meu nick ou o VIP não chegou.</summary><p>Chame a staff no servidor com o comprovante do Pix e o código do pedido que aparece depois do pagamento.</p></details>
+    <details><summary>Por quanto tempo o Pix vale?</summary><p>O código expira em 30 minutos. Se passar disso, é só gerar outro.</p></details>
+  </section>
+</main>
+
+<footer>
+  <p>Loja não oficial do servidor WitherCraft. Minecraft é uma marca da Mojang Studios e da Microsoft.</p>
+</footer>
+
+<dialog id="checkout" aria-labelledby="co-title">
+  <form method="dialog" class="co-close"><button aria-label="Fechar">×</button></form>
+
+  <div class="co-step" data-step="form">
+    <h2 id="co-title">Finalizar compra</h2>
+    <p class="co-summary" id="co-summary"></p>
+    <form id="co-form" novalidate>
+      <label>Seu nick no jogo
+        <input name="nick" autocomplete="off" maxlength="20" required placeholder="Exatamente como aparece no servidor">
+      </label>
+      <label>E-mail <small>(opcional, só para o recibo do Mercado Pago)</small>
+        <input name="email" type="email" autocomplete="email" placeholder="voce@email.com">
+      </label>
+      <p class="co-error" id="co-error" role="alert" hidden></p>
+      <button class="btn" id="co-submit" type="submit">Gerar Pix</button>
+    </form>
+  </div>
+
+  <div class="co-step" data-step="pix" hidden>
+    <h2>Pague o Pix</h2>
+    <p class="co-summary" id="co-summary2"></p>
+    <img id="co-qr" alt="QR Code do Pix" width="220" height="220" hidden>
+    <label>Pix copia e cola
+      <input id="co-code" readonly>
+    </label>
+    <button class="btn" id="co-copy" type="button">Copiar código</button>
+    <p class="co-wait" id="co-wait">Aguardando o pagamento…</p>
+  </div>
+
+  <div class="co-step" data-step="paid" hidden>
+    <h2 id="co-paid-title">Pagamento confirmado</h2>
+    <p id="co-paid-text"></p>
+    <p class="co-order">Pedido <code id="co-order-id"></code></p>
+    <button class="btn" type="button" id="co-done">Fechar</button>
+  </div>
+
+  <div class="co-step" data-step="expired" hidden>
+    <h2>O Pix expirou</h2>
+    <p>Esse código não vale mais. Gere um novo para continuar.</p>
+    <button class="btn" type="button" id="co-retry">Gerar outro Pix</button>
+  </div>
+</dialog>
+
+<script src="app.js" defer></script>
+</body>
+</html>

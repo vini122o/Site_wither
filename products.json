@@ -1,0 +1,97 @@
+{
+  "_aviso": "PREÇOS DE EXEMPLO: troque pelos seus. days = dias de VIP (0 = permanente). O id do VIP precisa ser igual ao nome usado no jogo em !vip definir kit <id>.",
+  "tiers": [
+    {
+      "id": "vip",
+      "name": "VIP",
+      "color": "#ffaa00",
+      "tagline": "Para começar com equipamento completo.",
+      "perks": [
+        "Kit VIP com equipamento de diamante, poções e maçãs",
+        "Menu VIP exclusivo no jogo"
+      ],
+      "plans": [
+        {
+          "days": 30,
+          "price": 9.9
+        },
+        {
+          "days": 0,
+          "price": 29.9
+        }
+      ],
+      "images": [
+        {
+          "src": "img/kit-vip.jpg",
+          "alt": "Conteúdo do Kit VIP"
+        }
+      ]
+    },
+    {
+      "id": "plus",
+      "name": "Plus",
+      "color": "#55ffff",
+      "tagline": "Equipamento de netherite e muito mais itens.",
+      "perks": [
+        "Kit Plus com equipamento de netherite e maçãs",
+        "1 compartimento extra com poções",
+        "Menu VIP exclusivo no jogo"
+      ],
+      "plans": [
+        {
+          "days": 30,
+          "price": 19.9
+        },
+        {
+          "days": 0,
+          "price": 59.9
+        }
+      ],
+      "images": [
+        {
+          "src": "img/kit-plus.jpg",
+          "alt": "Conteúdo do Kit Plus"
+        },
+        {
+          "src": "img/comp-plus-1.jpg",
+          "alt": "Compartimento 1 do Kit Plus"
+        }
+      ]
+    },
+    {
+      "id": "ultra",
+      "name": "Ultra",
+      "color": "#ff55ff",
+      "tagline": "O kit mais completo do servidor.",
+      "perks": [
+        "Kit Ultra com netherite completa e maçãs",
+        "2 compartimentos extras: totens, fogos e poções",
+        "Menu VIP exclusivo no jogo"
+      ],
+      "plans": [
+        {
+          "days": 30,
+          "price": 29.9
+        },
+        {
+          "days": 0,
+          "price": 89.9
+        }
+      ],
+      "images": [
+        {
+          "src": "img/kit-ultra.jpg",
+          "alt": "Conteúdo do Kit Ultra"
+        },
+        {
+          "src": "img/comp-ultra-1.jpg",
+          "alt": "Compartimento 1 do Kit Ultra"
+        },
+        {
+          "src": "img/comp-ultra-2.jpg",
+          "alt": "Compartimento 2 do Kit Ultra"
+        }
+      ]
+    }
+  ]
+}
